@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Vidya Jangid</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <style>
+        :root { --primary-glow: #ff7eb3; --secondary-glow: #ff758c; --text-color: #ffffff; --glass: rgba(255, 255, 255, 0.1); }
+        * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
+        body { background: #0f0c29; background: linear-gradient(to bottom, #24243e, #302b63, #0f0c29); color: white; font-family: 'Poppins', sans-serif; overflow-x: hidden; }
+        #bg-canvas { position: fixed; top: 0; left: 0; z-index: -1; }
+        .hero { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
+        .glow-text { font-family: 'Dancing Script', cursive; font-size: clamp(3rem, 10vw, 6rem); text-shadow: 0 0 20px #ff7eb3; margin-bottom: 10px; opacity: 0; transform: translateY(20px); animation: fadeInUp 1.5s forwards ease-out; }
+        .date-text { font-size: 1.5rem; color: #ff758c; opacity: 0; animation: fadeInUp 1.5s forwards 1.5s; }
+        .controls { position: fixed; top: 20px; right: 20px; z-index: 1000; }
+        .btn { background: var(--glass); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 10px 20px; border-radius: 25px; cursor: pointer; backdrop-filter: blur(10px); }
+        .content-section { min-height: 100vh; padding: 80px 20px; display: flex; flex-direction: column; align-items: center; }
+        .message-card { background: var(--glass); padding: 30px; border-radius: 20px; max-width: 600px; backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); text-align: center; line-height: 1.8; }
+        .typing-line { display: block; opacity: 0; margin-bottom: 10px; transition: 1s; }
+        .photo-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; margin-top: 50px; }
+        .photo-card { background: white; padding: 10px; width: 280px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transform: rotate(-3deg); transition: 0.5s; }
+        .photo-card img { width: 100%; height: 300px; object-fit: cover; }
+        .photo-caption { color: #333; text-align: center; font-family: 'Dancing Script', cursive; font-size: 1.2rem; margin-top: 10px; }
+        .footer { padding: 100px 20px; text-align: center; }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+        .reveal { opacity: 0; transform: translateY(30px); transition: 1s; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+    </style>
+</head>
+<body>
+
+    <canvas id="bg-canvas"></canvas>
+
+    <audio id="bdaySong" loop>
+        <source src="song.MPEG" type="audio/mpeg">
+    </audio>
+
+    <div class="controls">
+        <button class="btn" onclick="playMusic()" id="musicBtn">🎵 Play Music</button>
+    </div>
+
+    <section class="hero">
+        <h1 class="glow-text">Happy Birthday Vidya Jangid 🎉</h1>
+        <p class="date-text">25 MARCH 2026</p>
+        <p style="margin-top: 50px; cursor: pointer;" onclick="window.scrollTo(0, window.innerHeight)">Scroll Down ❤️</p>
+    </section>
+
+    <section class="content-section">
+        <div class="message-card reveal" id="msg-box">
+            <div id="message-container"></div>
+        </div>
+    </section>
+
+    <section class="content-section">
+        <h2 class="glow-text" style="font-size: 3rem;">Special Memories</h2>
+        <div class="photo-grid">
+            <div class="photo-card reveal">
+                <img src="vidya.jpg" alt="Vidya">
+                <p class="photo-caption">Vidya Jangid</p>
+            </div>
+            <div class="photo-card reveal">
+                <img src="together.jpg" alt="Govind Mui">
+                <p class="photo-caption">Memories with Govind</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="footer">
+        <div class="reveal">
+            <p>I wish you all the success in your LIFE!</p>
+            <h2 style="font-size: 2.5rem; margin-top: 20px; color: #ff7eb3;">By, Govind Jangid ❤️</h2>
+        </div>
+    </section>
+
+    <script>
+        // Particle Background logic
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize); resize();
+        class Particle {
+            constructor() { this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height; this.size = Math.random() * 2 + 1; this.speedX = Math.random() * 1 - 0.5; this.speedY = Math.random() * 1 - 0.5; }
+            update() { this.x += this.speedX; this.y += this.speedY; if (this.x > canvas.width) this.x = 0; if (this.x < 0) this.x = canvas.width; if (this.y > canvas.height) this.y = 0; if (this.y < 0) this.y = canvas.height; }
+            draw() { ctx.fillStyle = 'rgba(255, 117, 140, 0.5)'; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); }
+        }
+        for (let i = 0; i < 80; i++) { particles.push(new Particle()); }
+        function animate() { ctx.clearRect(0, 0, canvas.width, canvas.height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
+        animate();
+
+        // Music Play Function (Important for Chrome)
+        function playMusic() {
+            const audio = document.getElementById('bdaySong');
+            const btn = document.getElementById('musicBtn');
+            if (audio.paused) { audio.play(); btn.innerText = "⏸ Pause Music"; }
+            else { audio.pause(); btn.innerText = "🎵 Play Music"; }
+        }
+
+        // Message typing
+        const lines = [
+            "Dear Vidya,",
+            "On this special day, I want to celebrate the person you are.",
+            "A soul filled with kindness and a mind destined for greatness.",
+            "As a REET aspirant, I see your dedication and hard work every day.",
+            "Like a complex equation, life may seem tough sometimes,",
+            "But I know you have the perfect logic to solve every challenge.",
+            "May this year bring you closer to all your dreams and goals.",
+            "May your smile remain as bright as the morning sun,",
+            "And your heart stay as pure as it has always been.",
+            "Keep shining, keep learning, and never stop believing in yourself.",
+            "You are not just a student of life, but a master of your own destiny.",
+            "Wishing you a year full of love, health, and massive success!"
+        ];
+        let lineIdx = 0;
+        function type() {
+            if (lineIdx < lines.length) {
+                let p = document.createElement('span');
+                p.className = 'typing-line';
+                p.innerText = lines[lineIdx];
+                document.getElementById('message-container').appendChild(p);
+                setTimeout(() => { p.style.opacity = "1"; }, 50);
+                lineIdx++;
+                setTimeout(type, 1500);
+            }
+        }
+
+        // Scroll reveal
+        window.addEventListener('scroll', () => {
+            document.querySelectorAll('.reveal').forEach(el => {
+                if (el.getBoundingClientRect().top < window.innerHeight - 100) {
+                    el.classList.add('active');
+                    if (el.id === 'msg-box' && lineIdx === 0) type();
+                }
+            });
+        });
+
+        // Confetti
+        window.onload = () => { confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } }); };
+    </script>
+</body>
+</html>
